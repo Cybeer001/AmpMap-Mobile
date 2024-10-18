@@ -7,6 +7,7 @@ import { DrawerLayoutAndroid } from 'react-native';
 
 const App = () => {
   const [stations, setStations] = useState([]);
+  const [drawerContent, setDrawerContent] = useState('menu');
   const drawer = useRef(null);
 
   useEffect(() => {
@@ -17,7 +18,7 @@ const App = () => {
             output: 'json',
             countrycode: 'BR',
             maxresults: 500,
-            key: '6a219dc6-a068-40d6-a6f6-b6bf8d9fc9c9',
+            key: '40d68154-534c-4026-a54f-67b2c0e90459',
           },
         });
         setStations(response.data);
@@ -30,6 +31,14 @@ const App = () => {
   }, []);
 
   const handleMenuPress = () => {
+    setDrawerContent('menu');
+    if (drawer.current) {
+      drawer.current.openDrawer();
+    }
+  };
+
+  const handleProfilePress = () => {
+    setDrawerContent('profile');
     if (drawer.current) {
       drawer.current.openDrawer();
     }
@@ -55,12 +64,27 @@ const App = () => {
     </View>
   );
 
+  const profileView = () => (
+    <View style={styles.drawerContainer}>
+      <Text style={styles.drawerHeader}>Bem vindo! Usuário</Text>
+      <TouchableOpacity style={styles.profileButton} onPress={() => alert('Histórico')}>
+        <Text style={styles.menuButtonText}>Histórico</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.profileButton} onPress={() => alert('Preferências')}>
+        <Text style={styles.menuButtonText}>Preferências de Usuário</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.profileButton} onPress={() => alert('Favoritos')}>
+        <Text style={styles.menuButtonText}>Favoritos</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <DrawerLayoutAndroid
       ref={drawer}
       drawerWidth={300}
       drawerPosition="left"
-      renderNavigationView={navigationView}
+      renderNavigationView={drawerContent === 'menu' ? navigationView : profileView}
     >
       <View style={styles.container}>
         <MapView
@@ -99,7 +123,7 @@ const App = () => {
           ))}
         </MapView>
         <Image
-          source={require('./assets/pmap.png')}
+          source={require('./assets/logoB.png')}
           style={styles.watermark}
         />
         <TouchableOpacity
@@ -109,6 +133,16 @@ const App = () => {
           <Image
             source={require('./assets/menu.png')}
             style={styles.menuButtonImage}
+          />
+        </TouchableOpacity>
+        {/* Circular Profile Button */}
+        <TouchableOpacity
+          style={styles.profileButtonCircle}
+          onPress={handleProfilePress}
+        >
+          <Image
+            source={require('./assets/perfil.png')}
+            style={styles.profileButtonImage}
           />
         </TouchableOpacity>
       </View>
@@ -156,6 +190,22 @@ const styles = StyleSheet.create({
     height: 120,
     resizeMode: 'contain',
   },
+  profileButtonCircle: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileButtonImage: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
   drawerContainer: {
     flex: 1,
     padding: 16,
@@ -165,6 +215,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  profileButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: 'center',
   },
   menuButtonRed: {
     backgroundColor: 'red',
